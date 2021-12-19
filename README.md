@@ -8,7 +8,9 @@
 
 ### Deploy Bitwarden Server using Argo CD
 
-#### ApplicationSet config example
+#### ApplicationSet config example: bitwarden-server.yaml
+- Note: bitwarden secrets needs to be created in the same namespace as bitwarden server. Example is given below
+
 ```
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
@@ -46,7 +48,6 @@ spec:
       source:
         repoURL: git@github.com:satish-labs/bitwarden-server.git
         targetRevision: "{{values.targetRevision}}"
-        path: "/"
         helm:
           version: v3
           releaseName: '{{values.prefix}}-{{values.environment}}-{{values.applicationName}}'
@@ -105,9 +106,14 @@ spec:
         syncOptions:
         - CreateNamespace=true
 ```
+
 #### Bitwarden Secrets Example
 ```
 apiVersion: v1
+kind: Secret
+metadata:
+  name: bitwarden-secrets
+type: Opaque
 data:
   ADMIN_TOKEN: $(64-char-secret | base64)
   SMTP_AUTH_MECHANISM: $(Login,Plain | base64)
@@ -120,8 +126,4 @@ data:
   SMTP_SSL: $(true | base64)
   SMTP_TIMEOUT: $(15 | base64)
   SMTP_USERNAME: $(aws-access-key | base64)
-kind: Secret
-metadata:
-  name: bitwarden-secrets
-type: Opaque
 ```
