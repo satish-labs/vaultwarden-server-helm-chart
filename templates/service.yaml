@@ -1,0 +1,32 @@
+{{- $fullName := include "bitwarden.fullname" . -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app.kubernetes.io/name: {{ include "bitwarden.name" . }}
+    helm.sh/chart: {{ include "bitwarden.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.target_port }}
+      protocol: TCP
+      name: http
+    {{- if .Values.bitwarden.websocket_enabled }}
+    - port: {{ .Values.bitwarden.websocket_port }}
+      targetPort: {{ .Values.bitwarden.websocket_port }}
+      protocol: TCP
+      name: bitwarden
+    {{- end }}
+  {{- if .Values.service.externalIPs }}
+  externalIPs: {{- toYaml .Values.service.externalIPs | nindent 4 }}
+  {{- end }}
+  {{- if .Values.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "bitwarden.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

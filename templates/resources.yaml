@@ -1,0 +1,4 @@
+{{- if .Values.resources.enabled -}}
+---
+{{ .Values.resources.specs }}
+{{- end }}

@@ -1,0 +1,69 @@
+{{- if .Values.storage.enabled -}}
+{{- if .Values.backup.enabled -}}
+{{- $fullName := include "bitwarden.fullname" . -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ $fullName }}-database-backup
+  labels:
+    app.kubernetes.io/name: {{ include "bitwarden.name" . }}
+    helm.sh/chart: {{ include "bitwarden.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ $fullName }}-database-backup
+            image: "{{ .Values.backup.image.repository }}:{{ .Values.backup.image.tag }}"
+            imagePullPolicy: {{ .Values.backup.image.pullPolicy }}
+            envFrom:
+            - configMapRef:
+                name: {{ $fullName }}-backup-config
+              {{- if .Values.backup.secrets.name }}
+            - secretRef:
+                name: {{ .Values.backup.secrets.name }}
+              {{- end }}
+            volumeMounts:
+            - mountPath: {{ .Values.storage.path }}
+              name: data-storage
+            {{- if .Values.backup.persistence.enabled }}
+            - mountPath: {{ .Values.backup.persistence.path }}
+              name: backup-storage
+            {{- end }}
+          volumes:
+          - name: data-storage
+            persistentVolumeClaim:
+              claimName: {{ $fullName }}-pv
+          {{- if .Values.backup.persistence.enabled }}
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: {{ $fullName }}-backup-pv
+          {{- end }}
+          restartPolicy: OnFailure
+          {{- with .Values.backup.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.image.pullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
+{{- end }}

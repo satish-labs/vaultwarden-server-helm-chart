@@ -1,0 +1,16 @@
+{{- if .Values.backup.enabled }}
+{{- $fullName := include "bitwarden.fullname" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}-backup-config
+  labels:
+    app.kubernetes.io/name: {{ include "bitwarden.name" . }}
+    helm.sh/chart: {{ include "bitwarden.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  {{- range $key, $val := .Values.backup.config }}
+  {{ $key | upper }}: {{ $val | quote }}
+  {{- end}}
+{{- end }}
