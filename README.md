@@ -48,6 +48,7 @@ spec:
       source:
         repoURL: git@github.com:satish-labs/bitwarden-server.git
         targetRevision: "{{values.targetRevision}}"
+        path: "./"
         helm:
           version: v3
           releaseName: '{{values.prefix}}-{{values.environment}}-{{values.applicationName}}'
