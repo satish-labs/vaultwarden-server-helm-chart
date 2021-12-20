@@ -128,3 +128,6 @@ data:
   SMTP_TIMEOUT: $(15 | base64)
   SMTP_USERNAME: $(aws-access-key | base64)
 ```
+
+## Credits
+- Vaultwarden Server: https://github.com/dani-garcia/vaultwarden
