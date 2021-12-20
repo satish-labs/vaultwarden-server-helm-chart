@@ -2,6 +2,8 @@
 
 ## Introduction
 
+This is a simple Helm Chart for an unofficial Bitwarden compatible server [vaultwarden](https://github.com/dani-garcia/vaultwarden) written in Rust, formerly known as bitwarden_rs.
+
 ## Examples
 
 ### Local deploy using helm commands
