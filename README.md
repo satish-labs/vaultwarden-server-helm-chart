@@ -48,7 +48,7 @@ spec:
     spec:
       project: '{{values.prefix}}-{{values.environment}}'
       source:
-        repoURL: git@github.com:satish-labs/bitwarden-server.git
+        repoURL: https://github.com/satish-labs/vaultwarden-server-helm-chart
         targetRevision: "{{values.targetRevision}}"
         path: "./"
         helm:
