@@ -86,7 +86,7 @@ deployment:
   # See: https://github.com/dani-garcia/vaultwarden
   image:
     repository: vaultwarden/server
-    tag: 1.23.1
+    tag: 1.29.2
     pullPolicy: IfNotPresent
     pullSecrets: []
   command: [ "/start.sh" ]
